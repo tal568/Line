@@ -34,7 +34,9 @@ public class AlpaBeta {
 			int x=project.Win(bord, -1)-enemy;
 		
 			if(depth==0||System.currentTimeMillis()-start>=timeout||x==0)
-			return project.Win(bord, 1)-player-x;
+	//	return project.Win(bord, 1)-player-x;
+				return x-project.Win(bord, 1)+player;
+				
 		  List<int[][]>allmove=AllMoves(bord,-1);
 						while(allmove!=null) 
 						{
@@ -79,7 +81,9 @@ public class AlpaBeta {
 			{	boolean eaten=false;
 			int x=project.Win(bord, 1)-player;
 			if(depth==0||System.currentTimeMillis()-start>=timeout||x==0)
-					return -(x-(project.Win(bord, -1)-enemy));
+					//return -(x-(project.Win(bord, -1)-enemy));
+				return -x-enemy+project.Win(bord, -1);
+				
 				 List<int[][]>allmove=AllMoves(bord,1);
 					while(allmove!=null) 
 					{ if(allmove.GetValue()!=null) {

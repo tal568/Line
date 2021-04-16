@@ -17,8 +17,10 @@ class project {
 	private static int enemy=12;
 	private static int player=12;
 	private static int turn=1;
-	private static int depth=4;
+	private static int depth;
    private static List<Moves> moves=null;
+   private static int time;
+	
    // amound of slodier each turn
 	
 	// [0][] is frome and [1][] is to
@@ -30,13 +32,16 @@ class project {
 
 		Menu menu = new Menu();
 		menu.setVisible(true);
+		Diff dif=new Diff();
 		menu.setSize(500, 500);
 		RulseC rulse = new RulseC();
 		MainGame play = new MainGame();
-		rulse.GetBack().addActionListener(new Window(menu, rulse, play));
-		menu.GetHtp().addActionListener(new Window(menu, rulse, play));
-		menu.GetStart().addActionListener(new Window(menu, rulse, play));
-		play.GetSurnder().addActionListener(new Window(menu, rulse, play));
+		rulse.GetBack().addActionListener(new Window(menu, rulse, play,dif));
+		menu.GetHtp().addActionListener(new Window(menu, rulse, play,dif));
+		menu.GetStart().addActionListener(new Window(menu, rulse, play,dif));
+		play.GetSurnder().addActionListener(new Window(menu, rulse, play,dif));
+		dif.GetMed().addActionListener(new Window(menu, rulse, play,dif));
+		dif.GetHard().addActionListener(new Window(menu, rulse, play,dif));
 		SetBord(play);
 		play.GetUndo().addActionListener(new Move(play.GetAction(),play));
 
@@ -229,7 +234,7 @@ class project {
 				 {
 					 if(bord[y][x].GetPlayer()!=bord[save[0]][save[1]].GetPlayer()) {
 						
-				  while((i<x &&j>y)&&legal) 
+				  while((i>x &&j<y)&&legal) 
 				  { if(bord[j][i].GetPlayer()==-bord[save[0]][save[1]].GetPlayer())
 					  legal=false;
 					  i--;
@@ -472,24 +477,8 @@ class project {
 		
 		play.SetEnemy(enemy);
 		play.Setplayer(player);
-System.out.println("  player conect:"+Win(bord,1));
- if(player==Win(bord,1)) 
- {
-	 JOptionPane.showMessageDialog(play, "the player Won");
-	 while(moves!=null)
-		 UndoList(action);
- }
- else
- if(enemy==Win(bord,-1))
-		 {
-	 JOptionPane.showMessageDialog(play, "the player lost");
-	 while(moves!=null)
-	 UndoList(action);
-		 }
-		
-		System.out.println("eneamy concetct:"+Win(bord,-1));
-		return bord;
 
+ return bord;
 	}
 
 	public static int[] DisWay(Soldier[][] bord, int y, int x) {// say the number of move in aderction
@@ -587,12 +576,35 @@ System.out.println("  player conect:"+Win(bord,1));
 			
 			   
 			 }
+			 if(player==Win(bord,1)) 
+			 {
+				 JOptionPane.showMessageDialog(play, "the player Won");
+				 while(moves!=null)
+					 UndoList(action);
+			     enemy=12;
+			     player=12;
+			 	play.SetEnemy(enemy);
+				play.Setplayer(player);
+				turn=1;
+			 }
+			 else
+			 if(enemy==Win(bord,-1))
+					 {
+				 JOptionPane.showMessageDialog(play, "the player lost");
+				 while(moves!=null)
+				 UndoList(action);
+					 }
+			 turn=1;
+					System.out.println("eneamy concetct:"+Win(bord,-1));
+				
+
+				}
 			
 		
 				
 		}
 		}
-	}
+	
 		
 	
 	
@@ -602,12 +614,20 @@ System.out.println("  player conect:"+Win(bord,1));
 		private Menu menu;
 		private RulseC rulse;
 		private MainGame play;
+		private Diff dif;
 
-		public Window(Menu menu, RulseC rulse, MainGame play) {
+		public Window(Menu menu, RulseC rulse, MainGame play,Diff dif) {
 			this.menu = menu;
 			this.rulse = rulse;
 			this.play = play;
+			this.dif=dif;
 		}
+	
+
+
+
+	
+		
 
 	
 
@@ -621,6 +641,10 @@ System.out.println("  player conect:"+Win(bord,1));
 	             }
 	             play.setVisible(false);
 	             menu.setVisible(true);
+	             enemy=12;
+	             player=12;
+	         	play.SetEnemy(enemy);
+	    		play.Setplayer(player);
 	    }
 	    else
 			if (arg0.getSource() == menu.GetHtp()) {
@@ -632,14 +656,30 @@ System.out.println("  player conect:"+Win(bord,1));
 			} else if (arg0.getSource() == menu.GetStart()) {
 				menu.setVisible(false);
 				rulse.setVisible(false);
-				play.setVisible(true);
+				dif.setVisible(true);
+			}
+				else if(arg0.getSource() == dif.GetMed()) 
+				{
+					time=5;
+					depth=3;
+					dif.setVisible(false);
+					 play.setVisible(true);
+				}
+				else if(arg0.getSource() == dif.GetHard()) 
+				{
+					time=15;
+					depth=4;
+					dif.setVisible(false);
+					 play.setVisible(true);
+				}
 
-			} 
+			}
 			
 
 		}
+
 		
-	}
+	
 	
 	
 	
@@ -806,7 +846,8 @@ System.out.println("  player conect:"+Win(bord,1));
 			
 		}
 	
-					
+	
+	
 	public static Soldier[][] SimpleMove(Soldier[][] bord,int y,int x,int [] save,int turn,int player,int enemy) 
 	{// save is frome y x is to 
 	if(bord[y][x].GetPlayer()==-turn) 
@@ -825,7 +866,7 @@ System.out.println("  player conect:"+Win(bord,1));
 		return bord;
 		
 	}
-	
+
 	public static  Soldier[][] Undo (Soldier[][] bord,int[] save,int[] to,boolean eaten)
 	{ 
 		bord[save[0]][save[1]].SetPlayer(bord[to[0]][to[1]].GetPlayer());
