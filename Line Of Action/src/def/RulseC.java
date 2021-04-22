@@ -38,8 +38,9 @@ class RulseC extends JFrame {
 				+ "Each circle will be able to pass over a circle that has the same color.\r\n"
 				+ " A circle will not be able to pass over the circle with a different color,\r\n"
 				+ " the circle will come out "
-				+ "(if there is one circle left  it mean avictory for the same color .\r\n"
-				+ " because all its circles are connected).");
+				+ "(if there is one circle left  it mean avictory for the"
+				+ " same color.because all its circles are connected).");
+				
 		back = new JButton("go back");
 		back.setBounds(0, 449, 89, 23);
 		getContentPane().add(back);

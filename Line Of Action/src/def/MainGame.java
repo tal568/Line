@@ -13,6 +13,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import def.project.Window;
@@ -21,54 +22,65 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import java.awt.Font;
+import javax.swing.DropMode;
 
 public class MainGame extends JFrame
 { 
-	private JTextArea textArea;
+	
 	private JButton[][] action=new JButton[8][8];
 	 private JMenuItem surnder;
 	 private JMenuItem undo;
 	 private JLabel condison ;
 	 private JLabel enemy;
-	 private JLabel player;
+	 private JLabel playerp;
+	 private JMenuItem player = new JMenuItem("Player");
+	 private JMenuItem ai = new JMenuItem("Ai");
+	 JMenuItem normal = new JMenuItem("normal");
+		JMenuItem hard = new JMenuItem("hard");
+		JTextField con= new JTextField("player connections:6 enemy connections:6");
+		JTextField wins= new JTextField("player win amount:0   enemy win amount:0");
 	
  public MainGame() 
  {
-	 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-	 int width = screenSize.width;
-	 int height = screenSize.height;
 
-	 if (width>1000)
-		 width=1000;
-	 if (height>1000)
-		 height=1000;
-	 double x=(double)width/1000;
-	 double y=(double)height/1000;
-	setSize(width, height);
+	setSize(1200, 1000);
 	getContentPane().setLayout(null);
 	
 	JPanel bord = new JPanel();
-	bord.setBounds((int)(10*x),(int)(0*y),(int)(682*x),(int)(653*y));
+	bord.setBounds(0,0,800,800);
 	getContentPane().add(bord);
 	bord.setLayout(new GridLayout(8, 8));
 	SetAction(bord);
 	JPanel panel = new JPanel();
-	panel.setBounds((int)(702*x),(int)(11*y),(int)(274*x),(int)(653*y));
 	getContentPane().add(panel);
+	panel.setBounds(800,0,400,800);
+	
 	panel.setBackground(Color.white);
 	
-	JTextArea textArea = new JTextArea();
-	textArea.setEditable(false);
-	panel.add(textArea);
-	
+	con.setEnabled(false);
+	con.setEditable(false);
+	con.setFont(new Font("serif", Font.PLAIN, 20));
+
+	wins.setEnabled(false);
+	wins.setEditable(false);
+	wins.setFont(new Font("serif", Font.PLAIN, 20));
+	panel.add(con);
+	con.setBackground(Color.black);
+	wins.setBackground(Color.black);
+
+	panel.add(wins);
+	int x=800;
+	int y=800;
+
 	 enemy = new JLabel("Enemy solders:12");
-	enemy.setBounds((int)(5*x),(int)(659*y),(int)(117*x),(int)(62*y));
+	enemy.setBounds((200),(y),(200),(50));
 	getContentPane().add(enemy);
 	
 
-	 player = new JLabel("player solders:12");
-	player.setBounds((int)(127*x),(int)(657*y),(int)(140*x),(int)(61*y));
-    getContentPane().add(player);
+	 playerp = new JLabel("player solders:12");
+	playerp.setBounds((0),(y),(200),(50));
+    getContentPane().add(playerp);
     
     condison = new JLabel("");
     
@@ -86,6 +98,19 @@ public class MainGame extends JFrame
 	
 	 surnder = new JMenuItem("surender");
 	mnNewMenu.add(surnder);
+	
+	JMenu mnNewMenu_1 = new JMenu("play against");
+	menuBar.add(mnNewMenu_1);
+	mnNewMenu_1.add(ai);
+	mnNewMenu_1.add(player);
+	
+	JMenu mnSelect = new JMenu("select difficulty");
+	menuBar.add(mnSelect);
+	
+	
+	mnSelect.add(normal);
+	
+	mnSelect.add(hard);
 	 
 		
 					}
@@ -142,15 +167,10 @@ public class MainGame extends JFrame
  }
  public void Setplayer(int num) 
  {
-	 this.player.setText("player solders:"+String.valueOf(num));
+	 this.playerp.setText("player solders:"+String.valueOf(num));
  }
  
-public JTextArea GetTextArea() {
-	return textArea;
-}
-public void SetTextArea(JTextArea textArea) {
-	this.textArea = textArea;
-}
+
 public JMenuItem GetUndo() 
 {
 	return undo;
@@ -158,6 +178,12 @@ public JMenuItem GetUndo()
 public JMenuItem GetSurnder() 
 {
 	return surnder;
+	}
+public JMenuItem GetAi() 
+{return ai;
+	}
+public JMenuItem GetPlayer() 
+{return player;
 	}
 public void SetStateTxt(String x) 
 {
@@ -180,4 +206,21 @@ public void SetAction(JButton[][] x)
 {
 	action=x;
 	}
+public JMenuItem GetNormal() 
+{
+	return normal;
+	}
+public JMenuItem GetHard() 
+{
+	return hard;
+	}
+
+public void SetCon(int player,int enemy) 
+{ con.setText("player connections:"+player+" enemy connections:"+ enemy);
+
+	}
+public void SetWins(int player,int enemy) {
+	
+	wins.setText("player win amount:"+player+"   enemy win amount:"+enemy);;
+}
 }

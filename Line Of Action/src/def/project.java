@@ -20,6 +20,8 @@ class project {
 	private static int depth;
    private static List<Moves> moves=null;
    private static int time;
+   private static boolean ai=true;
+   private static int[] totwins= new int[2];
 	
    // amound of slodier each turn
 	
@@ -42,8 +44,13 @@ class project {
 		play.GetSurnder().addActionListener(new Window(menu, rulse, play,dif));
 		dif.GetMed().addActionListener(new Window(menu, rulse, play,dif));
 		dif.GetHard().addActionListener(new Window(menu, rulse, play,dif));
+		play.GetAi().addActionListener(new Window(menu, rulse, play,dif));
+		play.GetPlayer().addActionListener(new Window(menu, rulse, play,dif));
 		SetBord(play);
 		play.GetUndo().addActionListener(new Move(play.GetAction(),play));
+	play.GetHard().addActionListener(new Window(menu, rulse, play,dif));
+	play.GetNormal().addActionListener(new Window(menu, rulse, play,dif));
+		
 
 
 
@@ -419,7 +426,7 @@ class project {
 			return bord;
 		}
 
-		if ((action[y][x].getBackground() != Color.green || bord[save[0]][save[1]].GetPlayer() == bord[y][x].GetPlayer())&&turn!=-1)
+		if ((action[y][x].getBackground() != Color.green || bord[save[0]][save[1]].GetPlayer() == bord[y][x].GetPlayer())&&(turn!=-1||ai==false))
 			return bord;
 		
 		
@@ -537,12 +544,17 @@ class project {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			int[] to= {0,0};
-			
-   
+	
 			if(arg0.getSource()==play.GetUndo()&& moves!=null) 
 			{
 			//	Soldier[][] bord,int[] save,int[] to,boolean eaten,int turn)
              UndoList(play.GetAction());
+             DefPosBord(bord,play.GetAction());
+      		 DefPaint(play.GetAction());
+             
+             // DefPosBord(bord,play.GetAction());
+     		// DefPaint(play.GetAction());
+
 				
 				
 			}
@@ -563,39 +575,37 @@ class project {
 			}
 	
 			bord = MakeMove(action, bord, to,save,play);
+			boolean win=false;
+			win=ChekWin(play,action);
+		if(win) {
+			DefPosBord(bord,play.GetAction());
+    		DefPaint(play.GetAction());
+		}
 			
 		
-		
-			 if(turn==-1) {
+			 if(turn==-1&&ai&&win==false) {
 				 
 				
-					AlpaBeta x =new AlpaBeta(depth);
-					x.Start(bord, player, enemy,depth);
+					AlpaBeta x2 =new AlpaBeta(depth);
+					x2.Start(bord, player, enemy,depth);
 			 
-			     MakeMove(action,bord,x.GetBestMove()[1],x.GetBestMove()[0],play);
+			     MakeMove(action,bord,x2.GetBestMove()[1],x2.GetBestMove()[0],play);
 			
 			   
 			 }
-			 if(player==Win(bord,1)) 
-			 {
-				 JOptionPane.showMessageDialog(play, "the player Won");
-				 while(moves!=null)
-					 UndoList(action);
-			     enemy=12;
-			     player=12;
-			 	play.SetEnemy(enemy);
-				play.Setplayer(player);
-				turn=1;
-			 }
-			 else
-			 if(enemy==Win(bord,-1))
-					 {
-				 JOptionPane.showMessageDialog(play, "the player lost");
-				 while(moves!=null)
-				 UndoList(action);
-					 }
-			 turn=1;
-					System.out.println("eneamy concetct:"+Win(bord,-1));
+			 
+			win=ChekWin(play,action);
+			if(win) 
+			{
+				while(moves!=null) 
+				{
+				 	 UndoList(play.GetAction());
+	            }
+				DefPosBord(bord,play.GetAction());
+        		DefPaint(play.GetAction());
+
+			}
+					
 				
 
 				}
@@ -634,11 +644,26 @@ class project {
 		@Override
 		public void actionPerformed(ActionEvent arg0) 
 		{
+			if(arg0.getSource()==play.GetNormal()) 
+			{
+				depth=3;
+				time=5;
+			}
+			else 
+				if(arg0.getSource()==play.GetHard())
+				{
+					depth=4;
+					time=15;
+				}
+				else
 			 if (arg0.getSource() == play.GetSurnder()) {
 	             while(moves!=null) 
 	             {
 	            	 UndoList(play.GetAction());
+	            		
 	             }
+	             DefPosBord(bord,play.GetAction());
+         		DefPaint(play.GetAction());
 	             play.setVisible(false);
 	             menu.setVisible(true);
 	             enemy=12;
@@ -672,7 +697,12 @@ class project {
 					dif.setVisible(false);
 					 play.setVisible(true);
 				}
-
+			 if(arg0.getSource()==play.GetAi()) 
+				ai=true;
+			 
+			 else
+				 if(arg0.getSource()==play.GetPlayer())
+                     ai=false;
 			}
 			
 
@@ -906,8 +936,47 @@ class project {
 	   help.SetNext(null);
 	   moves=head;
 		}
-		DefPosBord(bord,action);
-		DefPaint(action);
+	
+	}
+	public static boolean ChekWin(MainGame play,JButton[][] action) 
+	{
+		 int x=Win(bord,1);
+		 int y=Win(bord,-1);
+		 play.SetCon(x, y);
+		 
+		 if(player==x) 
+		 {
+			 JOptionPane.showMessageDialog(play, "the player Won");
+			 while(moves!=null)
+				 UndoList(action);
+		     enemy=12;
+		     player=12;
+		 	play.SetEnemy(enemy);
+			play.Setplayer(player);
+			turn=1;
+			totwins[0]++;
+			play.SetCon(x, y);
+			 return true;
+			
+		 }
+		 else
+		 if(enemy==y)
+				 {
+			 while(moves!=null)
+				 UndoList(action);
+			 JOptionPane.showMessageDialog(play, "the enemy Won");
+		     enemy=12;
+		     player=12;
+		     turn=1;
+		 	play.SetEnemy(enemy);
+			play.Setplayer(player);
+			
+			totwins[1]++;
+			 return true;
+				 }
+		 play.SetCon(x, y);
+		 play.SetWins(totwins[0],totwins[1]);
+	  return false;
 	}
 
 	
